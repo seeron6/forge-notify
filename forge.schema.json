@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "sections": [
+    {
+      "key": "features",
+      "label": "Feature toggles",
+      "fields": [
+        {
+          "key": "channels.enabled",
+          "type": "boolean",
+          "label": "Enable Channel adapters",
+          "default": true
+        },
+        {
+          "key": "templates.enabled",
+          "type": "boolean",
+          "label": "Enable Template engine",
+          "default": true
+        },
+        {
+          "key": "queue.enabled",
+          "type": "boolean",
+          "label": "Enable Retry queue",
+          "default": true
+        },
+        {
+          "key": "audit.enabled",
+          "type": "boolean",
+          "label": "Enable Audit log",
+          "default": true
+        }
+      ]
+    },
+    {
+      "key": "theming",
+      "label": "Branding",
+      "fields": [
+        {
+          "key": "brand_name",
+          "type": "string",
+          "label": "Product name",
+          "default": ""
+        },
+        {
+          "key": "brand_color",
+          "type": "color",
+          "label": "Primary brand colour",
+          "default": "#ff6b1f"
+        }
+      ]
+    }
+  ]
+}
