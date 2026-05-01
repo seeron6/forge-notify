@@ -1,0 +1,19 @@
+{
+  "name": "@seeron6/forge-notify",
+  "version": "0.1.0",
+  "description": "Multi-channel delivery with retries, batching, and audit trails.",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo 'no tests yet' && exit 0"
+  },
+  "keywords": [
+    "forge",
+    "framework",
+    "notify",
+    "nextjs",
+    "typescript",
+    "postgres"
+  ],
+  "license": "MIT"
+}
