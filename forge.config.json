@@ -1,0 +1,21 @@
+{
+  "forge_version": "1",
+  "slug": "notify-canonical",
+  "category": "communications",
+  "name": "Notification Service",
+  "description": "A drop-in notification system with channel adapters (email, Slack, SMS, in-app), template rendering, retry queues, and delivery receipts. Built to be torn apart and rebuilt — every adapter is replaceable.",
+  "parent_id": null,
+  "is_base": true,
+  "stack": {
+    "language": "nextjs",
+    "framework": "typescript",
+    "runtime": "node"
+  },
+  "connectors": [
+    "channels",
+    "templates",
+    "queue",
+    "audit"
+  ],
+  "config_schema_version": "1.0.0"
+}
