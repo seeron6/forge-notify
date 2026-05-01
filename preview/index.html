@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>forge-notify · preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<style>
+  :root {
+    --bg: #0a0a0a; --bg-1: #111; --bg-2: #161616; --line: #242424; --line-2: #2e2e2e;
+    --ink: #f5f5f4; --ink-2: #d4d4d4; --ink-3: #a3a3a3; --ink-4: #737373;
+    --forge: #ff6b1f; --acid: #b6ff3d; --steel: #6ea8ff; --ember: #ffb547; --rust: #c44a2a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Geist', system-ui, sans-serif; font-size: 13.5px; line-height: 1.5; height: 100%; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+  .frame { display: grid; grid-template-rows: 36px 1fr; height: 100%; }
+  .titlebar { display: flex; align-items: center; gap: 8px; padding: 0 14px;
+    border-bottom: 1px solid var(--line); background: var(--bg-1);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-4); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #3a3a3a; }
+  .dot.live { background: var(--forge); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+  .panel { padding: 18px 22px; overflow: auto; }
+  .badge { display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 2px 6px;
+    border-radius: 4px; border: 1px solid var(--line-2); background: var(--bg-1); color: var(--ink-2); }
+  .badge-acid { color: var(--acid); border-color: rgba(182,255,61,.3); background: rgba(182,255,61,.08); }
+  .badge-rust { color: #e57b5f; border-color: rgba(196,74,42,.4); background: rgba(196,74,42,.08); }
+  .badge-steel { color: var(--steel); border-color: rgba(110,168,255,.3); background: rgba(110,168,255,.08); }
+  .btn { display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 11px;
+    border: 1px solid var(--line-2); background: var(--bg-1); border-radius: 6px; color: var(--ink); }
+  .btn:hover { background: var(--bg-2); border-color: #3a3a3a; }
+  .btn-primary { background: var(--forge); border-color: var(--forge); color: #0a0a0a; font-weight: 500; }
+  .btn-primary:hover { background: #ff8a3d; }
+  .row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+    padding: 10px 14px; border-top: 1px solid var(--line); }
+  .row:first-child { border-top: 0; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-3); }
+  input[type="text"], input[type="email"], input[type="search"], select, textarea {
+    background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 6px;
+    color: var(--ink); padding: 7px 10px; font: inherit; outline: 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  }
+  input:focus { border-color: var(--forge); }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="titlebar">
+    <span class="dot live"></span>
+    <span>forge-notify</span>
+    <span style="margin-left:auto">live preview · canonical variant</span>
+  </div>
+  <div class="panel">
+    <div class="eyebrow" style="margin-bottom:14px">Send a notification</div>
+    <form id="f" style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;margin-bottom:18px">
+      <select id="ch">
+        <option value="slack">slack</option>
+        <option value="email">email</option>
+        <option value="sms">sms</option>
+        <option value="in_app">in_app</option>
+      </select>
+      <input id="msg" type="text" placeholder="payment.failed for cust_19. Refund flagged." value="payment.failed · cust_19 · $4,200"/>
+      <button class="btn btn-primary" type="submit">deliver</button>
+    </form>
+    <div class="eyebrow" style="margin-bottom:8px">Delivery feed</div>
+    <div id="feed" style="border:1px solid var(--line);border-radius:8px"></div>
+  </div>
+</div>
+<script>
+  const ch = document.getElementById('ch'), msg = document.getElementById('msg'), feed = document.getElementById('feed');
+  const channels = { slack:'#C', email:'@', sms:'☎', in_app:'⌂' };
+  const colors  = { slack:'badge-acid', email:'badge-steel', sms:'badge-rust', in_app:'' };
+  let n = 1;
+  function add(channel, body, ok=true) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <span class="badge ${colors[channel]||''}">${channel}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${body}</span>
+      <span class="mono" style="color:${ok?'var(--acid)':'#e57b5f'};font-size:11px">${ok?'✓ delivered':'× failed'} · #${String(n++).padStart(4,'0')}</span>
+    `;
+    feed.prepend(row);
+    while (feed.children.length > 8) feed.lastElementChild.remove();
+  }
+  document.getElementById('f').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const ok = Math.random() > 0.05;
+    add(ch.value, msg.value, ok);
+  });
+  // seed
+  ['slack','email','in_app','slack','sms'].forEach((c, i) => add(c, `payment.failed · cust_${10+i*3} · $${(i+1)*1100}`, i!==2));
+</script>
+</body></html>
